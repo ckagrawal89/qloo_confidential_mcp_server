@@ -1,5 +1,5 @@
 [project]
-name = "your-package"
+name = "qloo_confidential_mcp_server"
 version = "0.1.0"
 dependencies = [
     "anyio>=4.5",
@@ -10,9 +10,6 @@ dependencies = [
     "sse-starlette>=1.6.1",
     "pydantic-settings>=2.5.2",
     "uvicorn>=0.23.1",
-    "google-api-python-client>=2.176.0",
-    "google-auth>=2.40.3",
-    "google-auth-oauthlib>=1.2.2",
     "mcp>=1.11.0",
     "gramine-ratls>=0.0.6",
 ]

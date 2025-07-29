@@ -1,0 +1,186 @@
+parameters:
+  filter.address:
+    type: string
+    description: 'Filter by address using a partial string query.'
+    compatible_entity_types:
+      - Place
+
+  filter.audience.types:
+    type: array of strings
+    description: 'Filter by a list of audience types.'
+    compatible_entity_types: []
+
+  filter.content_rating:
+    type: string
+    description: Filter by a comma-separated list of content ratings based on the MPAA film rating system, which determines suitability for various audiences.
+    compatible_entity_types:
+      - Movie
+      - TV Show
+
+  filter.date_of_birth.max:
+    type: string
+    description: 'Filter by the most recent date of birth desired for the queried person in format YYYY-MM-DD.'
+    compatible_entity_types:
+      - Person
+
+  filter.date_of_birth.min:
+    type: string
+    description: 'Filter by the earliest date of birth desired for the queried person. Format is YYYY-MM-DD.'
+    compatible_entity_types:
+      - Person
+
+  filter.external.resy.count.max:
+    type: integer
+    description: 'Filter places to include only those with a Resy rating count less than or equal to the specified maximum. Applies only to entities with filter.type of urn:entity:place.'
+    compatible_entity_types:
+      - Place
+  filter.external.resy.count.min:
+    type: integer
+    description: 'Filter places to include only those with a Resy rating count greater than or equal to the specified minimum. Applies only to entities with filter.type of urn:entity:place.'
+    compatible_entity_types:
+      - Place
+  filter.external.resy.party_size.max:
+    type: integer
+    description: 'Filter places to include only those with a Resy party size less than or equal to the specified maximum. Applies only to entities with filter.type of urn:entity:place.'
+    compatible_entity_types:
+      - Place
+  filter.external.resy.party_size.min:
+    type: integer
+    description: 'Filter places to include only those with a Resy party size greater than or equal to the specified minimum. Applies only to entities with filter.type of urn:entity:place.'
+    compatible_entity_types:
+      - Place
+  filter.external.resy.rating.max:
+    type: number
+    description: 'Filter places to include only those with a Resy rating less than or equal to the specified maximum. Applies only to entities with filter.type of urn:entity:place.'
+    compatible_entity_types:
+      - Place
+  filter.external.resy.rating.min:
+    type: number
+    description: 'Filter places to include only those with a Resy rating greater than or equal to the specified minimum. Applies only to entities with filter.type of urn:entity:place.'
+    compatible_entity_types:
+      - Place
+  filter.finale_year.max:
+    type: integer
+    description: 'Filter by the latest desired year for the final season of a TV show.'
+    compatible_entity_types:
+      - TV Show
+  filter.finale_year.min:
+    type: integer
+    description: 'Filter by the earliest desired year for the final season of a TV show.'
+    compatible_entity_types:
+      - TV Show
+  filter.gender:
+    type: string
+    description: 'Filter results to align with a specific gender identity. Used to personalize output based on known or inferred gender preferences.'
+    compatible_entity_types:
+      - Person
+
+  filter.location:
+    type: string
+    description: 'Filter by a WKT POINT, POLYGON, MULTIPOLYGON or a single Qloo ID for a named urn:entity:locality.\n WKT is formatted as X then Y, therefore longitude is first (POINT(-73.99823 40.722668)).If a Qloo ID or WKT POLYGON is passed, filter.location.radius will create a <glossary:fuzzy> boundary when set to a value > 0.'
+    compatible_entity_types:
+      - Destination
+      - Place
+
+  filter.exclude.location:
+    type: string
+    description: 'Exclude results that fall within a specific location, defined by either a WKT POINT, POLYGON, MULTIPOLYGON, or a Qloo ID for a named urn:entity:locality.\n WKT is formatted with longitude first (e.g., POINT(-73.99823 40.722668)). \n When using a locality ID or a WKT POLYGON, setting filter.location.radius to a value > 0 creates a fuzzy exclusion boundary.'
+    compatible_entity_types:
+      - Destination
+      - Place
+  filter.location.query:
+    type: string
+    description: 'Search for named locality Qloo IDs using a query string or array. For GET, provide a single locality as a string; for POST, use a string or array to query multiple localities. Multiple localities are merged for combined results. Queries are fuzzy-matched and case-insensitive. To restrict results strictly to the locality, set filter.location.radius=0.'
+    compatible_entity_types:
+      - Destination
+      - Place
+
+  filter.exclude.location.query:
+    type: string
+    description: 'Exclude results that fall within a specific location, defined by either a WKT POINT, POLYGON, MULTIPOLYGON, or a Qloo ID for a named urn:entity:locality.
+      WKT is formatted with longitude first (e.g., POINT(-73.99823 40.722668)).
+      When using a locality ID or a WKT POLYGON, setting filter.location.radius to a value > 0 creates a fuzzy exclusion boundary.'
+    compatible_entity_types:
+      - Destination
+      - Place
+
+  filter.location.geohash:
+    type: string
+    description: 'Filter by a geohash. Geohashes are generated using the Python package pygeohash with a precision of 12 characters. This parameter returns all POIs that start with the specified geohash. For example, supplying dr5rs would allow returning the geohash dr5rsjk4sr2w.'
+    compatible_entity_types:
+      - Destination
+      - Place
+
+  filter.exclude.location.geohash:
+    type: string
+    description: 'Exclude all entities whose geohash starts with the specified prefix.
+      Geohashes are generated using the Python package pygeohash with a precision of 12 characters.
+      For example, supplying dr5rs would exclude any result whose geohash begins with dr5rs, such as dr5rsjk4sr2w.'
+    compatible_entity_types:
+      - Destination
+      - Place
+
+  filter.location.radius:
+    type: integer
+    description: 'Filter by radius (in meters) when using filter.location or filter.location.query. If omitted, a default expansion includes nearby entities. Set to 0 to strictly limit results to the defined locality boundary.'
+    compatible_entity_types:
+      - Destination
+      - Place
+
+  filter.price_level.max:
+    type: integer
+    description: 'Filter by the maximum price level a Point of Interest can have (1|2|3|4, similar to dollar signs).'
+    compatible_entity_types:
+      - Place
+
+  filter.price_level.min:
+    type: integer
+    description: 'Filter by the minimum price level a Point of Interest can have (1|2|3|4, similar to dollar signs).'
+    compatible_entity_types:
+      - Place
+  filter.price_range.from:
+    type: integer
+    description: 'Filter places by a minimum price level, representing the lowest price in the desired range. Accepts an integer value between 0 and 1,000,000.'
+    compatible_entity_types:
+      - Place
+  filter.price_range.to:
+    type: integer
+    description: 'Filter places by a maximum price level, representing the highest price in the desired range. Accepts an integer value between 0 and 1,000,000.'
+    compatible_entity_types:
+      - Place
+
+  filter.publication_year.max:
+    type: number
+    description: 'Filter by the latest desired year of initial publication for the work.'
+    compatible_entity_types:
+      - book
+  filter.publication_year.min:
+    type: number
+    description: 'Filter by the earliest desired year of initial publication for the work.'
+    compatible_entity_types:
+      - book
+  filter.release_country:
+    type: array of strings
+    description: 'Filter by a list of countries where a movie or TV show was originally released.'
+    compatible_entity_types:
+      - Movie
+      - TV Show
+
+  filter.release_date.max:
+    type: string
+    description: 'Filter by the latest desired release date. Format is YYYY-MM-DD.'
+  filter.release_date.min:
+    type: string
+    description: 'Filter by the earliest desired release date Format is YYYY-MM-DD.'
+  filter.release_year.max:
+    type: integer
+    description: 'Filter by the latest desired release year.'
+    compatible_entity_types:
+      - Movie
+      - TV Show
+  filter.release_year.min:
+    type: integer
+    description: 'Filter by the earliest desired release year.'
+    compatible_entity_types:
+      - Movie
+      - TV Show
