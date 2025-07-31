@@ -12,7 +12,7 @@ from starlette.routing import Mount, Route
 from starlette.responses import PlainTextResponse
 from starlette.types import Receive, Scope, Send
 
-from src.qloo_mcp_server.get_insights import get_insights
+from src.qloo_mcp_server.get_insights import get_insights_by_entity_type
 from gramine_ratls.attest import write_ra_tls_key_and_crt
 import yaml
 import sys
@@ -42,13 +42,13 @@ def main(port: int, isDev: bool) -> int:
     app = Server("qloo-mcp-server")
 
     @app.call_tool()
-    async def qloo_tool(
-        name: str, arguments: dict
-    ) -> list[types.TextContent | types.ImageContent | types.EmbeddedResource]:
-        if "payload" not in arguments:
-            raise ValueError("Missing required argument 'payload'")
+    async def qloo_tool(name: str, arguments: dict):
+        if "entity_type" not in arguments:
+            raise ValueError("Missing required argument 'entity' in arguments")
         if name == "get_insights":
-            return get_insights(arguments["payload"])
+            print(f"Calling get_insights with arguments: {arguments}")
+            return get_insights_by_entity_type(entity_type = arguments["entity_type"], filters=arguments["filters"])
+            # return get_insights(arguments["payload"])
         else:
             raise ValueError(f"Unknown tool: {name}")
 
@@ -65,22 +65,75 @@ def main(port: int, isDev: bool) -> int:
             filter_desc = "No description available due to error reading file."
         try:
             tools_to_send = [
-                types.Tool(
-                    name = "get_insights",
-                    description = "get the insights for a given entity and filter. entity can be only one from the list ['artist','brand','movie', 'tv_show', 'book', 'place', 'podcast','video_game', 'music','destination','person'] and there is different filters for each entity type. Configure the filters in the payload.",
-                    inputSchema = {
-                    "type": "object",
-                    "required": [
-                        "payload"
-                    ],
-                    "properties": {
-                        "payload": {
-                            "type": "object",
-                            "description": "Payload is a JSON object that contains the entity type and filters. The entity type must be one of the following: ['artist','brand','movie', 'tv_show', 'book', 'place', 'podcast','video_game', 'music','destination','person']. The filters are specific to each entity type and can include parameters like price level, publication year, release date, etc. Refer to the documentation for the specific filters available for each entity type. Entity always should be with filter.type key and value for this key is always urn:entity:<entity>. All the filter with their description are as {filter_desc_add}. Make sure payload must have filter.type with atleast one filters from filters list. Sample payload for a movie entity might look like: {{\"filter.type\": \"urn:entity:movie\", \"filter.address\": \"New York\", \"filter.release_year.min\": 2000, \"filter.release_year.max\": 2020}}.".format(filter_desc_add=str(filter_desc)),
-                        }
-                    },
-                }
-                )
+                types.Tool(name= "get_insights",
+  description=  "Fetch insights for a specific entity type by applying relevant filters. Must include 'filter.type' (e.g., 'urn:entity:movie') and at least one other valid filter. Entity can be only one from the list ['artist','brand','movie', 'tv_show', 'book', 'place', 'podcast','video_game', 'music','destination','person'] and there is different filters for each entity type. Configure the filters in the payload.",
+  inputSchema= {
+    "type": "object",
+    "properties": {
+        "entity_type": {
+            "type": "string",
+            "description": "URN identifier for the entity type. Must be one of: 'urn:entity:artist', 'urn:entity:brand', 'urn:entity:movie', 'urn:entity:tv_show', 'urn:entity:book', 'urn:entity:place', 'urn:entity:podcast', 'urn:entity:video_game', 'urn:entity:music', 'urn:entity:destination', 'urn:entity:person'."
+        },
+      "filters": {
+        "type": "object",
+        "description": "A JSON object containing the applicable filters based on the entity. At least one filter must be present.",
+        "properties": {
+
+          "filter.address": {
+            "type": "string",
+            "description": "Filter by partial address (e.g., 'New York'). Applicable to: place"
+          },
+          "filter.content_rating": {
+            "type": "string",
+            "description": "Comma-separated list of MPAA content ratings (e.g., 'PG,PG-13'). Applicable to: movie, tv_show"
+          },
+          "filter.release_year.min": {
+            "type": "integer",
+            "description": "Minimum release year. Applicable to: movie, tv_show"
+          },
+          "filter.release_year.max": {
+            "type": "integer",
+            "description": "Maximum release year. Applicable to: movie, tv_show"
+          },
+          "filter.date_of_birth.min": {
+            "type": "string",
+            "description": "Minimum DOB in YYYY-MM-DD. Applicable to: person"
+          },
+          "filter.date_of_birth.max": {
+            "type": "string",
+            "description": "Maximum DOB in YYYY-MM-DD. Applicable to: person"
+          },
+          "filter.gender": {
+            "type": "string",
+            "description": "Gender identity filter (e.g., 'male', 'female'). Applicable to: person"
+          },
+          "filter.price_level.min": {
+            "type": "integer",
+            "description": "Minimum price level (1–4). Applicable to: place"
+          },
+          "filter.price_level.max": {
+            "type": "integer",
+            "description": "Maximum price level (1–4). Applicable to: place"
+          },
+          "filter.publication_year.min": {
+            "type": "number",
+            "description": "Minimum publication year. Applicable to: book"
+          },
+          "filter.publication_year.max": {
+            "type": "number",
+            "description": "Maximum publication year. Applicable to: book"
+          },
+          "filter.location": {
+            "type": "string",
+            "description": "WKT POINT or Qloo locality ID. Applicable to: place, destination"
+          },
+          "filter.location.radius": {
+            "type": "integer",
+            "description": "Radius in meters for fuzzy location match. Applicable to: place, destination"
+          }
+      }}
+    }}                )
+
             ]
         except Exception as e:
             print(f"Error creating tools: {e}", file=sys.stderr)
