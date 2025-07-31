@@ -74,7 +74,6 @@ def get_insights(payload) -> Dict[str, Any]:
             return {"ok": False, "error": "Invalid JSON payload"}
     elif not isinstance(payload, dict):
         return {"ok": False, "error": "Payload must be a JSON object or string"}
-    payload = {k: v for k, v in payload.items() if v is not None}
     if not QLOO_API_KEY:
         return {"ok": False, "error": "QLOO_API_KEY is required for API calls"}
     if "filter.type" not in payload or not str(payload.get("filter.type", "")).startswith("urn:entity:"):
@@ -102,4 +101,4 @@ def get_insights_by_entity_type(entity_type: str, filters: Dict[str, Any]) -> Di
     payload = {"filter.type": entity_type}
     if filters:
         payload.update(filters)
-    return get_insights({"payload": payload})
+    return get_insights(payload)
