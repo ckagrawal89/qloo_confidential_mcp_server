@@ -4,7 +4,7 @@ FROM python:3.12-slim-bookworm
 WORKDIR /app
 
 # Installing dependencies
-COPY pyproject.toml token.json /app/
+COPY pyproject.toml /app/
 RUN pip install .
 
 # Then copy src/
