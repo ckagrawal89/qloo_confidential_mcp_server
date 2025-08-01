@@ -11,4 +11,4 @@ RUN pip install .
 COPY src/ /app/src/
 ENTRYPOINT []
 
-CMD ["python", "-m", "src.qloo_mcp_server", "--isDev"]
+CMD ["python", "-m", "src.qloo_mcp_server"]
