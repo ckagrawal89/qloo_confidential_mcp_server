@@ -57,9 +57,8 @@ cd docker/gsc
 
 ### Starting Server in Direct Mode
 ```
-docker run -p 8000:8000 --rm --env GRAMINE_MODE=direct \
-  --security-opt seccomp=seccomp.json \
-  gsc-confidential-qloo-mcp-server
+docker run -p 8000:8000 --rm --entrypoint ""  --env GRAMINE_MODE=direct   --security-opt seccomp=seccomp.j
+son   gsc-confidential-qloo-mcp-server   python -m src.qloo_mcp_server --isDev
 ```
 
 The repetetive steps from above after building gramine_base and present in steps.sh and can be executed using:
@@ -69,5 +68,10 @@ bash steps.sh
 
 ## Starting Server on Secure Hardware
 ```
-docker run -itp --device=/dev/sgx_provision:/dev/sgx/provision  --device=/dev/sgx_enclave:/dev/sgx/enclave -v /var/run/aesmd/aesm.socket:/var/run/aesmd/aesm.socket -p 8000:8000 --rm gsc-confidential-qloo-mcp-server
+docker run --rm -it \
+  --device=/dev/sgx_enclave \
+  --device=/dev/sgx_provision \
+  -v /var/run/aesmd/aesm.socket:/var/run/aesmd/aesm.socket \
+  -p 8000:8000 \
+  gsc-confidential-qloo-mcp-server
 ```
